@@ -1,0 +1,76 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Начните здесь · Курс 0.0 → Тильда</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f0e8;color:#092b40;font:17px/1.6 system-ui,sans-serif}main{max-width:1000px;margin:auto;padding:40px 24px 70px}h1{font-size:36px;line-height:1.2}h2{font-size:24px;margin-top:32px}h3{font-size:20px}a{color:#006d99;text-underline-offset:3px}code{font-size:.92em;overflow-wrap:anywhere}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:white;padding:18px;border:1px solid #c3d0d6;font:14px/1.5 ui-monospace,monospace}table{width:100%;border-collapse:collapse;font-size:16px}td,th{border:1px solid #bdcbd2;padding:10px;text-align:left;vertical-align:top}ul,ol{padding-left:24px}.card{background:#fff;padding:22px 26px;margin:22px 0;border:1px solid #c7d3d9;border-radius:6px}.note{padding:16px 20px;background:#dcecf3;border-left:4px solid #008bb8}.button,button{display:inline-block;border:0;background:#092b40;color:#fff;padding:13px 20px;text-decoration:none;font:600 17px/1.4 system-ui,sans-serif;cursor:pointer;border-radius:4px;margin:6px 8px 6px 0}textarea{width:100%;height:240px;padding:14px;font:13px/1.5 ui-monospace,monospace;border:1px solid #9eb1bc}details{margin-top:20px}summary{cursor:pointer;font-weight:600}img{max-width:100%}a:focus-visible,button:focus-visible{outline:3px solid #008ebc;outline-offset:4px}@media(max-width:600px){main{padding:24px 16px}h1{font-size:28px}.card{padding:18px}table{font-size:14px}td,th{padding:6px}}</style></head><body><main>
+<p>HANGAR BRW · Курс 0.0 · Вариант G</p><h1>Перенос в редактируемый Zero Block</h1><p>Сохранены дневной перрон, исходные банки, шрифты и цветовая гамма. Добавлены характеристики, блок о пивоварне, макет формы и контакты.</p>
+<a class="button" href="index.html">Открыть готовую страницу</a><a class="button" href="ИНСТРУКЦИЯ.html">Инструкция по шагам</a>
+<div class="note">Это комплект для переноса. В аккаунт Тильды страница ещё не импортирована; локальная форма не отправляет заявки. Переключатель и анимация после импорта подключаются отдельно.</div>
+<div class="card"><h2>1. Загрузите шрифты</h2><p>В настройках проекта Тильды добавьте <a download href="assets/fuel.woff2">Fuel</a> и <a download href="assets/pt-sans-narrow-regular.woff2">PT Sans Narrow</a> под этими же именами. Затем импортируйте макет.</p></div>
+<div class="card"><h2>2. Импортируйте HTML</h2><p>Zero Block → «…» → «Импорт из HTML». Рекомендуется импорт по секциям: одна секция в один блок. Выберите «Применить настройки к артборду» и «Уменьшить вложенность групп». Проверьте 320 / 480 / 640 / 960 / 1200 px.</p><table><tr><td>Первый экран</td><td><a download href="import-sections/01-hero.html">Скачать 01-hero.html</a></td></tr><tr><td>Описание и характеристики</td><td><a download href="import-sections/02-story.html">Скачать 02-story.html</a></td></tr><tr><td>Объёмы</td><td><a download href="import-sections/03-product.html">Скачать 03-product.html</a></td></tr><tr><td>О пивоварне</td><td><a download href="import-sections/04-brewery.html">Скачать 04-brewery.html</a></td></tr><tr><td>Наличие и форма</td><td><a download href="import-sections/05-availability.html">Скачать 05-availability.html</a></td></tr><tr><td>Подвал</td><td><a download href="import-sections/06-footer.html">Скачать 06-footer.html</a></td></tr></table><p>Либо <a download href="IMPORT-ALL.html">скачайте всю страницу одним HTML-файлом</a>. Файлы содержат стили и встроенные ресурсы. Если картинки/шрифты не перенеслись, используйте <a href="PREPARE-IMPORT.html">помощник с URL ресурсов</a> или загрузите их в элементы вручную.</p></div>
+<div class="card"><h2>3. Верните переключение объёма</h2><ol><li>У нижней банки задайте CSS-класс <code>hg-can-045</code>.</li><li>Дублируйте слой, замените картинку на <a download href="assets/can-033.webp">can-033.webp</a>, задайте копии класс <code>hg-can-033</code>. Координаты и размеры двух слоёв должны совпадать на всех адаптивах.</li><li>У кнопок сохраните ссылки <code>#hg-volume-033</code> и <code>#hg-volume-045</code>.</li><li>Подписи «Сейчас на экране…» задайте класс <code>hg-volume-caption</code>.</li><li>Скопируйте код ниже в один блок T123 после всех Zero Block и опубликуйте тестовую страницу.</li></ol>
+<button id="copy-code">Скопировать код для T123</button><span id="copy-status" role="status"></span><details><summary>Показать код для ручного копирования</summary><textarea id="code" readonly aria-label="Код для блока T123">&lt;!-- Вставьте целиком в один T123 ПОСЛЕ всех Zero Block. Не импортируйте этот файл в Zero. --&gt;
+&lt;style&gt;
+/* Классы задаются вручную двум слоям банок в Zero Block. */
+.hg-can-033{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+.hg-can-045{opacity:1!important;visibility:visible!important}
+html.hg-volume-small .hg-can-033{opacity:1!important;visibility:visible!important;pointer-events:auto!important}
+html.hg-volume-small .hg-can-045{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+a[href=&quot;#hg-volume-033&quot;],a[href=&quot;#hg-volume-045&quot;]{cursor:pointer}
+a[href=&quot;#hg-volume-033&quot;][aria-pressed=&quot;true&quot;],a[href=&quot;#hg-volume-045&quot;][aria-pressed=&quot;true&quot;]{background-color:#092b40!important;color:#fff!important;border-color:#092b40!important}
+a[href=&quot;#hg-volume-033&quot;][aria-pressed=&quot;false&quot;],a[href=&quot;#hg-volume-045&quot;][aria-pressed=&quot;false&quot;]{background-color:transparent!important;color:#092b40!important;border-color:#092b40!important}
+@keyframes hgTildaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes hgTildaScene{from{transform:scale(1.03)}to{transform:scale(1.09)}}
+@media(prefers-reduced-motion:no-preference){.hg-float .tn-atom{animation:hgTildaFloat 7s ease-in-out infinite}.hg-scene .tn-atom{animation:hgTildaScene 18s ease-in-out infinite alternate}}
+&lt;/style&gt;
+&lt;script&gt;
+(()=&gt;{
+ &#x27;use strict&#x27;;
+ // Защита от повторной вставки одного и того же кода.
+ if(window.__hangarVolumeInstalled)return;
+ window.__hangarVolumeInstalled=true;
+ const selector=&#x27;a[href=&quot;#hg-volume-033&quot;],a[href=&quot;#hg-volume-045&quot;]&#x27;;
+ const smallSelector=&#x27;.hg-can-033&#x27;,largeSelector=&#x27;.hg-can-045&#x27;;
+ let isSmall=false;
+ function refresh(){
+  document.documentElement.classList.toggle(&#x27;hg-volume-small&#x27;,isSmall);
+  document.querySelectorAll(selector).forEach(button=&gt;{
+   const active=(button.getAttribute(&#x27;href&#x27;)===&#x27;#hg-volume-033&#x27;)===isSmall;
+   button.setAttribute(&#x27;role&#x27;,&#x27;button&#x27;);button.setAttribute(&#x27;aria-pressed&#x27;,String(active));
+  });
+  document.querySelectorAll(smallSelector).forEach(el=&gt;el.setAttribute(&#x27;aria-hidden&#x27;,String(!isSmall)));
+  document.querySelectorAll(largeSelector).forEach(el=&gt;el.setAttribute(&#x27;aria-hidden&#x27;,String(isSmall)));
+  document.querySelectorAll(&#x27;.hg-volume-caption .tn-atom&#x27;).forEach(el=&gt;{
+   el.textContent=&#x27;Сейчас на экране — &#x27;+(isSmall?&#x27;0,33&#x27;:&#x27;0,45&#x27;)+&#x27; л.&#x27;;
+   el.setAttribute(&#x27;aria-live&#x27;,&#x27;polite&#x27;);
+  });
+ }
+ function activate(event){
+  const target=event.target instanceof Element?event.target.closest(selector):null;
+  if(!target)return;
+  event.preventDefault();event.stopPropagation();
+  isSmall=target.getAttribute(&#x27;href&#x27;)===&#x27;#hg-volume-033&#x27;;refresh();
+ }
+ // Capture обрабатывает клик до стандартного обработчика якорей Тильды.
+ document.addEventListener(&#x27;click&#x27;,activate,true);
+ document.addEventListener(&#x27;keydown&#x27;,event=&gt;{
+  if(event.code===&#x27;Space&#x27;&amp;&amp;event.target instanceof Element&amp;&amp;event.target.closest(selector))activate(event);
+ },true);
+ // Для импорта всей страницы в один Zero Block: классы задаются заголовкам.
+ const anchors={&#x27;#hg-story&#x27;:&#x27;hg-anchor-story&#x27;,&#x27;#hg-product&#x27;:&#x27;hg-anchor-product&#x27;,&#x27;#hg-availability&#x27;:&#x27;hg-anchor-availability&#x27;};
+ document.addEventListener(&#x27;click&#x27;,event=&gt;{
+  const link=event.target instanceof Element?event.target.closest(&#x27;a[href]&#x27;):null;
+  if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+  const hash=link.getAttribute(&#x27;href&#x27;),className=anchors[hash];
+  if(!className||document.getElementById(hash.slice(1)))return;
+  const destination=document.querySelector(&#x27;.&#x27;+className);
+  if(!destination)return;
+  event.preventDefault();event.stopPropagation();
+  destination.scrollIntoView({behavior:matchMedia(&#x27;(prefers-reduced-motion: reduce)&#x27;).matches?&#x27;instant&#x27;:&#x27;smooth&#x27;,block:&#x27;start&#x27;});
+ },true);
+ if(document.readyState===&#x27;loading&#x27;)document.addEventListener(&#x27;DOMContentLoaded&#x27;,refresh,{once:true});else refresh();
+ // Тильда может отрисовать элементы после DOMContentLoaded.
+ window.addEventListener(&#x27;load&#x27;,refresh,{once:true});
+ setTimeout(refresh,800);
+})();
+&lt;/script&gt;
+</textarea></details><p>Для анимации банке первого экрана назначьте класс <code>hg-float</code>, фоновому изображению — <code>hg-scene</code>. Подробности и якоря — в <a href="ИНСТРУКЦИЯ.html">инструкции</a>.</p></div>
+<div class="card"><h2>4. Подключите штатную форму</h2><p>После импорта проверьте форму Zero Block или замените её штатным элементом Form: имя необязательно, город и контакт обязательны, согласие исходно не отмечено. Кнопка — «Уточнить наличие». Подключите приёмщик в Тильде и отправьте тестовую заявку. Макет сам по себе не настраивает доставку писем.</p></div>
+<div class="card"><h2>5. Проверьте опубликованную страницу</h2><p>Два объёма, якоря, телефоны, карта и ссылки; отсутствие обрезки на мобильных; реальное получение заявки. Крепость ≤0,5% сохранена из исходного макета — перед публикацией сверить с производителем.</p><p><a href="ИЗМЕНЕНИЯ-И-ПРОВЕРКИ.md">Список изменений</a> · <a href="ТЕКСТЫ.txt">Все тексты</a> · <a href="ПРОВЕРКА.json">Результаты локальной проверки</a></p></div>
+</main><script>document.getElementById('copy-code').addEventListener('click',async()=>{const field=document.getElementById('code'),status=document.getElementById('copy-status');try{await navigator.clipboard.writeText(field.value);status.textContent='Код скопирован'}catch{document.querySelector('details').open=true;field.focus();field.select();status.textContent='Нажмите Ctrl+C / ⌘C для копирования'}});</script></body></html>

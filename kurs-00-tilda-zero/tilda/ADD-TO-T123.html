@@ -1,0 +1,65 @@
+<!-- Вставьте целиком в один T123 ПОСЛЕ всех Zero Block. Не импортируйте этот файл в Zero. -->
+<style>
+/* Классы задаются вручную двум слоям банок в Zero Block. */
+.hg-can-033{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+.hg-can-045{opacity:1!important;visibility:visible!important}
+html.hg-volume-small .hg-can-033{opacity:1!important;visibility:visible!important;pointer-events:auto!important}
+html.hg-volume-small .hg-can-045{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+a[href="#hg-volume-033"],a[href="#hg-volume-045"]{cursor:pointer}
+a[href="#hg-volume-033"][aria-pressed="true"],a[href="#hg-volume-045"][aria-pressed="true"]{background-color:#092b40!important;color:#fff!important;border-color:#092b40!important}
+a[href="#hg-volume-033"][aria-pressed="false"],a[href="#hg-volume-045"][aria-pressed="false"]{background-color:transparent!important;color:#092b40!important;border-color:#092b40!important}
+@keyframes hgTildaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes hgTildaScene{from{transform:scale(1.03)}to{transform:scale(1.09)}}
+@media(prefers-reduced-motion:no-preference){.hg-float .tn-atom{animation:hgTildaFloat 7s ease-in-out infinite}.hg-scene .tn-atom{animation:hgTildaScene 18s ease-in-out infinite alternate}}
+</style>
+<script>
+(()=>{
+ 'use strict';
+ // Защита от повторной вставки одного и того же кода.
+ if(window.__hangarVolumeInstalled)return;
+ window.__hangarVolumeInstalled=true;
+ const selector='a[href="#hg-volume-033"],a[href="#hg-volume-045"]';
+ const smallSelector='.hg-can-033',largeSelector='.hg-can-045';
+ let isSmall=false;
+ function refresh(){
+  document.documentElement.classList.toggle('hg-volume-small',isSmall);
+  document.querySelectorAll(selector).forEach(button=>{
+   const active=(button.getAttribute('href')==='#hg-volume-033')===isSmall;
+   button.setAttribute('role','button');button.setAttribute('aria-pressed',String(active));
+  });
+  document.querySelectorAll(smallSelector).forEach(el=>el.setAttribute('aria-hidden',String(!isSmall)));
+  document.querySelectorAll(largeSelector).forEach(el=>el.setAttribute('aria-hidden',String(isSmall)));
+  document.querySelectorAll('.hg-volume-caption .tn-atom').forEach(el=>{
+   el.textContent='Сейчас на экране — '+(isSmall?'0,33':'0,45')+' л.';
+   el.setAttribute('aria-live','polite');
+  });
+ }
+ function activate(event){
+  const target=event.target instanceof Element?event.target.closest(selector):null;
+  if(!target)return;
+  event.preventDefault();event.stopPropagation();
+  isSmall=target.getAttribute('href')==='#hg-volume-033';refresh();
+ }
+ // Capture обрабатывает клик до стандартного обработчика якорей Тильды.
+ document.addEventListener('click',activate,true);
+ document.addEventListener('keydown',event=>{
+  if(event.code==='Space'&&event.target instanceof Element&&event.target.closest(selector))activate(event);
+ },true);
+ // Для импорта всей страницы в один Zero Block: классы задаются заголовкам.
+ const anchors={'#hg-story':'hg-anchor-story','#hg-product':'hg-anchor-product','#hg-availability':'hg-anchor-availability'};
+ document.addEventListener('click',event=>{
+  const link=event.target instanceof Element?event.target.closest('a[href]'):null;
+  if(!link||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+  const hash=link.getAttribute('href'),className=anchors[hash];
+  if(!className||document.getElementById(hash.slice(1)))return;
+  const destination=document.querySelector('.'+className);
+  if(!destination)return;
+  event.preventDefault();event.stopPropagation();
+  destination.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});
+ },true);
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refresh,{once:true});else refresh();
+ // Тильда может отрисовать элементы после DOMContentLoaded.
+ window.addEventListener('load',refresh,{once:true});
+ setTimeout(refresh,800);
+})();
+</script>
