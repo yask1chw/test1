@@ -1,0 +1,35 @@
+Options -MultiViews -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 /404.html
+RewriteEngine On
+
+# Combine host, HTTPS, index.html and slash normalization in one redirect.
+# X-Forwarded-Proto must be set by a trusted reverse proxy only (see deployment).
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !^https$ [NC]
+RewriteRule ^ - [E=NEED_HTTPS:1]
+RewriteCond %{HTTP_HOST} !^5masters\.ru$ [NC,OR]
+RewriteCond %{ENV:NEED_HTTPS} =1
+RewriteRule ^ - [E=CANONICAL_HOST:1]
+
+RewriteCond %{THE_REQUEST} \s/+(.*/)?index\.html[\s?] [NC]
+RewriteRule ^(.*)index\.html$ https://5masters.ru/$1 [R=301,L,NE]
+
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteCond %{REQUEST_URI} !/$
+RewriteRule ^ https://5masters.ru%{REQUEST_URI}/ [R=301,L,NE]
+
+RewriteCond %{ENV:CANONICAL_HOST} =1
+RewriteRule ^ https://5masters.ru%{REQUEST_URI} [R=301,L,NE]
+
+# No topical evidence for legacy URLs: return a real 404 rather than guessing.
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule ^ - [R=404,L]
+
+<IfModule mod_mime.c>
+ AddType application/javascript .js
+ AddType text/css .css
+ AddType image/svg+xml .svg
+</IfModule>
