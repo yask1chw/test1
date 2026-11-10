@@ -1,0 +1,18 @@
+{
+  "checks": [
+    {
+      "route": "/",
+      "direct": true
+    },
+    {
+      "route": "/rolstavni",
+      "direct": true
+    },
+    {
+      "route": "/kontakty",
+      "direct": true
+    }
+  ],
+  "errors": [],
+  "consoleErrors": []
+}
