@@ -1,0 +1,267 @@
+{
+  "pages": 37,
+  "errors": [],
+  "image_sources_match_original": true,
+  "external_provider_check": "Not verified: environment proxy blocks readdy.ai (CONNECT 403). Original URLs preserved.",
+  "results": [
+    {
+      "page": "index.html",
+      "original_images": 19,
+      "restored_images": 19,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "ceny/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "kontakty/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/index.html",
+      "original_images": 14,
+      "restored_images": 14,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolvorota/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "nashi-raboty/index.html",
+      "original_images": 8,
+      "restored_images": 8,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni-bu/index.html",
+      "original_images": 4,
+      "restored_images": 4,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "plastikovye-okna/index.html",
+      "original_images": 2,
+      "restored_images": 2,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "o-kompanii/index.html",
+      "original_images": 4,
+      "restored_images": 4,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "dlya-biznesa/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "remont-rolstavney/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/dlya-sklada/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/protivovzlomnye/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/dlya-pavilona/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/na-vitriny/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/na-dveri/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/dlya-magazina/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/dlya-ofisa/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/avtomaticheskie/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/dlya-doma/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/na-okna/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni/dlya-garazha/index.html",
+      "original_images": 3,
+      "restored_images": 3,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni-bu/alutech-1600x1600-white-sold/index.html",
+      "original_images": 4,
+      "restored_images": 4,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni-bu/alutech-2400x2100-grey/index.html",
+      "original_images": 4,
+      "restored_images": 4,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni-bu/doorhan-1000x1400-white/index.html",
+      "original_images": 4,
+      "restored_images": 4,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni-bu/katalog/index.html",
+      "original_images": 6,
+      "restored_images": 6,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni-bu/alutech-1200x1800-white/index.html",
+      "original_images": 4,
+      "restored_images": 4,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni-bu/alutech-3500x3000-industrial/index.html",
+      "original_images": 4,
+      "restored_images": 4,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni-bu/doorhan-1500x2200-brown/index.html",
+      "original_images": 4,
+      "restored_images": 4,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "rolstavni-bu/vykup/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "remont-rolstavney/remont-pulta/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "remont-rolstavney/remont-avtomatiki/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "remont-rolstavney/srochniy-remont/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "remont-rolstavney/ne-otkryvayutsya/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "remont-rolstavney/zamena-lamelej/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "remont-rolstavney/ne-zakryvayutsya/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    },
+    {
+      "page": "remont-rolstavney/zamena-dvigatelya/index.html",
+      "original_images": 1,
+      "restored_images": 1,
+      "missing": [],
+      "unexpected": []
+    }
+  ]
+}

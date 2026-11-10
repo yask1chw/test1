@@ -22,7 +22,7 @@ replacements={
  'На новые конструкции и монтаж — до 5 лет. Гарантия фиксируется в договоре вместе со сроками и стоимостью.':'Условия гарантии на конструкции и монтаж фиксируются в договоре вместе со сроками и стоимостью.',
  'Реквизиты':'Компания',
  'ООО «5 Мастеров»':'5 Мастеров', 'ИНН 1831000000':'','ОГРН 1101800000000':'',
- 'Показываем реальные фото объектов, а не стоковые картинки.':'Фотографии объектов предоставляются отдельно; схемы на сайте не являются фотографиями работ.',
+ 'Показываем реальные фото объектов, а не стоковые картинки.':'Изображения на сайте используются как иллюстрации. Фотографии выполненных работ предоставляются отдельно.',
  'Реальные объекты в Ижевске и Удмуртии':'Обсудите задачу вашего объекта',
  'Перейдите на страницу с причиной, сроками и ориентировочной стоимостью ремонта.':'Выберите неисправность, чтобы узнать порядок диагностики и обращения.',
  'Написать в MAX в MAX':'Написать в MAX',
@@ -57,8 +57,7 @@ def clean_literal(m):
  if value!=before:removed.append({'before':before,'after':value})
  return json.dumps(value,ensure_ascii=False)
 app=re.sub(r'"(?:[^"\\]|\\.)*"',clean_literal,app)
-# All remote generated images are replaced by explicit local placeholders.
-app=re.sub(r'"https://readdy\.ai/api/search-image[^"\n]*"','"/assets/shutter-scheme.svg"',app)
+# Keep the original image URLs at the owner's request. No generated replacements.
 # Preserve specific product prices from the project; detach incorrect repair pricing.
 app=app.replace('["Ремонт автоматики и пультов","от 2 500 ₽"]','["Ремонт автоматики и пультов","По диагностике"]')
 # The catalogue sort select showed untranslated machine values.

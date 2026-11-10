@@ -37,6 +37,12 @@ await page.locator('a[href^="tel:"]:visible').first().click();
 await page.locator('a[data-max-goal]:visible').first().click();
 const goals=await page.evaluate(()=>window.__testGoals);ensure(goals.some(a=>a[1]==='reachGoal'&&a[2]==='click_phone'),'Telephone goal');ensure(goals.some(a=>a[1]==='reachGoal'&&a[2]==='click_max'),'MAX goal');ensure(spaGoals.some(a=>a[1]==='hit'),'SPA Metrika hit');ensure(goals.filter(a=>a[1]==='init').length===1,'One Metrika init');
 await page.goto('http://127.0.0.1:8090/rolstavni-bu/katalog/');await page.waitForFunction(()=>!!window.REACT_APP_NAVIGATE);const selects=page.locator('main select');await selects.first().selectOption({label:'Серый'});ensure((await page.locator('[data-product-shop] a').count())===1,'Used catalogue filters');
+await page.goto('http://127.0.0.1:8090/nashi-raboty/');await page.waitForFunction(()=>!!window.REACT_APP_NAVIGATE);
+const galleryCount=await page.locator('main article').count();ensure(galleryCount>3,'Restored gallery images');
+await page.getByRole('button',{name:'Гараж',exact:true}).click();ensure(await page.locator('main article').count()===1,'Gallery filters');
+await page.goto('http://127.0.0.1:8090/rolstavni-bu/alutech-1200x1800-white/');await page.waitForFunction(()=>!!window.REACT_APP_NAVIGATE);
+ensure((await page.locator('main img').first().getAttribute('src')).includes('seq=bu-alutech-01'),'Original product image source');
+ensure(await page.getByText('Иллюстрация. Фото изделия уточняйте.',{exact:true}).first().isVisible(),'Product illustration caption');
 fs.mkdirSync('work/reports/screenshots',{recursive:true});
 const routes=['/','/rolstavni/','/remont-rolstavney/remont-avtomatiki/','/rolstavni/dlya-pavilona/','/rolstavni-bu/alutech-1600x1600-white-sold/','/nashi-raboty/'];
 for(const width of [1440,390]){

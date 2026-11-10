@@ -18,7 +18,7 @@ for url in urls:
  check([h1,title,desc,canonical]==[spec[k] for k in ['h1','title','description','canonical']],path+' spec mismatch')
  check(title not in titles and desc not in descs,path+' duplicate metadata');titles.add(title);descs.add(desc)
  check(not any(x in s.body.get_text() for x in ['undefined','null','[object Object]','1831000000','1101800000000']),path+' invalid text')
- check('readdy.ai/api/search-image' not in str(s),path+' remote generated image')
+ check(not s.select('main img[src$="shutter-scheme.svg"],main img[src$="photo-missing.svg"]'),path+' image placeholder remains')
  check(len(s.select('link[rel="preload"][as="image"]'))<=1,path+' preload count')
  for img in s.select('main img'):check(img.has_attr('width') and img.has_attr('height'),path+' missing image size')
  for script in s.select('script[type="application/ld+json"]'):
