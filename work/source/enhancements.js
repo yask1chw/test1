@@ -40,7 +40,13 @@ function portfolioIllustrations(){return n.jsxs(ct,{children:[n.jsx(Bt,{eyebrow:
 Z.inn=''; Z.ogrn=''; Z.brandLegal=Z.brand;
 for(const item of b0){
  const slug=item.path.split('/').pop();
+ const entireCurtain=item.title==='Требуется замена полотна';
+ if(item.term.startsWith('Сроки изготовления')) item.term='Срок по согласованию';
  if(repairContent[slug]) item.title=siteSeo[item.path].h1;
+ if(slug==='zamena-lamelej'){
+  item.title=entireCurtain?'Замена полотна рольставней целиком':'Замена отдельных ламелей рольставней';
+  item.description=entireCurtain?'Замена всего полотна, если восстановление отдельных ламелей невозможно или нецелесообразно.':'Замена повреждённых ламелей с сохранением остального полотна.';
+ }
  if(['remont-avtomatiki','remont-pulta','srochniy-remont'].includes(slug)){item.price='По диагностике';item.term='По согласованию';}
 }
 for (const item of Ub) {

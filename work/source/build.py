@@ -16,6 +16,17 @@ seo['/404']=dict(h1='Страница не найдена',title='Страниц
 (SITE/'assets/seo-data.json').write_text(json.dumps(seo,ensure_ascii=False,indent=2))
 s=(ORIGINAL/'assets/index-DN2BKFX8.js').read_text()
 start=s.index('function I({');meta=s.index('const rv=');app=s[start:meta]
+# Edit complete JSX phrases before the legacy literal substitutions.
+app,count=re.subn(r'children:\["За ",Z\.region,"(?:[^"\\]|\\.)*"\]', 'children:"Работаем с частными клиентами и организациями в Ижевске и Удмуртии."',app)
+assert count==1, 'Expected the original company introduction once'
+old_footer='children:["© ",new Date().getFullYear()," ",Z.brandLegal,". ",Z.inn," · ",Z.ogrn]'
+assert old_footer in app
+app=app.replace(old_footer,'children:["© ",new Date().getFullYear()," ",Z.brandLegal]')
+# A second repair card covers the entire curtain, not individual slats.
+old_card='children:i.title}),n.jsxs("div",{className:"mt-4 flex items-center justify-between border-t border-background-200 pt-3 text-xs"'
+new_card='children:i.title}),i.description&&n.jsx("p",{className:"mt-2 text-sm leading-relaxed text-foreground-600",children:i.description}),n.jsxs("div",{className:"mt-4 flex items-center justify-between border-t border-background-200 pt-3 text-xs"'
+assert old_card in app
+app=app.replace(old_card,new_card)
 replacements={
  'До 5 лет на конструкции и монтаж, гарантия на ремонт.':'Условия гарантии фиксируются в договоре.',
  'На новые конструкции и монтаж даём гарантию до 5 лет, на ремонт и замененные детали — гарантию на выполненные работы. Все обязательства фиксируем в договоре.':'Условия гарантии на конструкции, монтаж и ремонт согласуются до начала работ и фиксируются в договоре.',
@@ -29,7 +40,6 @@ replacements={
  'Да, выезд замерщика по Ижевску бесплатный.':'Условия выезда замерщика по Ижевску согласуются при обращении.',
  'Да. Замер бесплатный, демонтаж старых конструкций и вывоз мусора включаем в работы.':'Условия замера, демонтажа старых конструкций и вывоза мусора согласуются до начала работ.',
  'Согласуем бесплатный замер':'Согласуем замер',
- 'бесплатно':'по согласованию',
  'Ламели, направляющие и приводы под основные системы в наличии.':'Совместимость и наличие деталей уточняются после диагностики.',
  'Склад новых комплектующих и б/у рольставней в Ижевске.':'Наличие комплектующих и б/у конструкций уточняйте при обращении.',
  'Работаем с 2013 года':'Продажа, монтаж и ремонт',
@@ -46,7 +56,6 @@ def clean_literal(m):
  if not re.search('[А-Яа-я]',value) or value.startswith('http'):return raw
  before=value
  for a,b in replacements.items():value=value.replace(a,b)
- if 'мы установили тысячи конструкций' in value:value=' — работаем с частными клиентами и бизнесом. Условия заказа согласуются индивидуально.'
  if not value.endswith('?'):
   if re.search(r'\d[–—\d ]*(?:рабочих )?(?:дней|дня|часа|часов)',value) and not ('₽' in value or 'эксплуатация' in value):
    value='Сроки изготовления, монтажа или выезда согласуются при обращении с учётом конструкции и объёма работ.'
@@ -54,6 +63,12 @@ def clean_literal(m):
   value=value.replace('Экономия 40–60%','Сравнение стоимости').replace('экономия до 70%','стоимость зависит от ремонта').replace('экономия 40–60%','стоимость зависит от состояния').replace('Дешевле новых на 40–60%','Сравните с новыми').replace('дешевле новых на 40–60%','цена зависит от состояния')
   value=value.replace('Замер бесплатно','Условия замера по согласованию').replace('Замер по Ижевску бесплатно','Замер по согласованию').replace('замер бесплатно','замер по согласованию').replace('бесплатный замер','замер по согласованию').replace('бесплатного замера','согласованного замера').replace('Замер бесплатный.','Условия замера согласуются при обращении.').replace('замерим бесплатно','согласуем замер').replace('Бесплатный выезд специалиста','Согласованный выезд специалиста').replace('Выезд по Ижевску бесплатный.','Условия выезда согласуются при обращении.')
   value=value.replace('Диагностика бесплатно','Диагностика по согласованию').replace('Диагностика ремонта бесплатно','Условия диагностики по согласованию').replace('Диагностика при выезде бесплатная','Условия диагностики согласуются при обращении').replace('диагностика бесплатно','диагностика по согласованию').replace('Диагностика при выезде — бесплатно','Условия диагностики по согласованию').replace('бесплатная диагностика','диагностика').replace('Выезд в день обращения','Выезд по согласованию')
+ value=re.sub(r'\bбесплатно\b','по согласованию',value)
+ value=re.sub(r'([Сс])огласуем замер по согласованию',lambda m:m[1]+'огласуем удобное время замера',value)
+ value=value.replace('проконсультируем по согласованию','ответим на вопросы и поможем выбрать решение')
+ value=value.replace('запишем на замер по согласованию','согласуем удобное время замера')
+ value=value.replace('согласуем время согласованного замера','согласуем удобное время замера')
+ value=value.replace('Оставьте заявку — согласуем замер и посчитаем стоимость именно вашего проёма.','Оставьте заявку — согласуем удобное время замера и посчитаем стоимость именно вашего проёма.')
  if value!=before:removed.append({'before':before,'after':value})
  return json.dumps(value,ensure_ascii=False)
 app=re.sub(r'"(?:[^"\\]|\\.)*"',clean_literal,app)
