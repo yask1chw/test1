@@ -1,0 +1,328 @@
+<!-- Вставить в T123 после существующих блоков. Прежний JS квиза удалить. -->
+<script>
+// Можно оставить пустыми: скрипт ищет заголовки вопросов и одну форму с телефоном.
+// Если нужны точные ID: questionBlocks: ['#rec111', '#rec222', '#rec333'],
+// contact: '#rec444, #rec445', thanks: '#rec555', form: '#rec445 form'.
+window.AvdeevaBlocksQuizConfig = {
+  questionBlocks: ['', '', ''],
+  contact: '.uc-quiz-contact',
+  thanks: '.uc-quiz-thanks',
+  form: '',
+  scrollOffset: 80
+};
+/* Turn existing Tilda records into a quiz. Paste in a T123 block AFTER those records. */
+(function (w, d) {
+  'use strict';
+  if (w.AvdeevaBlocksQuiz) return;
+
+  const defaults = {
+    steps: [
+      { selector: '.uc-quiz-q1', title: 'Какая площадь вашего участка?', options: ['До 10 соток', '10–15 соток', 'Больше 15 соток', 'Нет участка (хочу получить анализ участка от архитектора)'] },
+      { selector: '.uc-quiz-q2', title: 'Какую площадь проекта вы предполагаете?', options: ['100–250 м²', '250–400 м²', 'Свыше 400 м²', 'Пока не определились'] },
+      { selector: '.uc-quiz-q3', title: 'Выберите стиль дома', options: ['Минимализм', 'Современный', 'Классика', 'Райт', 'Шале'] }
+    ],
+    contact: '.uc-quiz-contact',
+    thanks: '.uc-quiz-thanks',
+    form: '',
+    fieldName: 'QuizAnswers',
+    scrollOffset: 80
+  };
+  const cfg = Object.assign({}, defaults, w.AvdeevaBlocksQuizConfig || {});
+  cfg.steps = defaults.steps.map((step, i) => Object.assign({}, step, cfg.steps[i] || {}, cfg.questionBlocks?.[i] ? { selector: cfg.questionBlocks[i] } : {}));
+  let initialized = false, index = 0, sending = false, completed = false, form = null;
+  let groups = [], contact = [], thanks = [], choices = [], cleanups = [];
+  let legacy = null;
+  const answers = ['', '', ''];
+
+  function norm(value) {
+    return String(value || '').toLowerCase().replace(/ё/g, 'е').replace(/²/g, '2').replace(/[–—−]/g, '-').replace(/\s+/g, ' ').replace(/\s*-\s*/g, '-').trim();
+  }
+  function text(el) { return el.innerText || el.textContent || ''; }
+  function unique(items) { return Array.from(new Set(items)); }
+  function select(selector) {
+    if (!selector) return [];
+    try { return Array.from(d.querySelectorAll(selector)); } catch (_) { return []; }
+  }
+  function recordWithTitle(title) {
+    const nodes = select('.t-rec h1,.t-rec h2,.t-rec h3,.t-rec .tn-atom,.t-rec .t-title,.t-rec .t-descr');
+    return unique(nodes.filter(el => norm(text(el)).includes(norm(title))).map(el => el.closest('.t-rec'))).filter(Boolean);
+  }
+  function resolve() {
+    const oldRoot = d.getElementById('avdeeva-quiz');
+    const oldSteps = oldRoot ? Array.from(oldRoot.querySelectorAll('[data-step]')) : [];
+    if (oldSteps.length === 3) {
+      const end = oldRoot.querySelector('[data-contact]');
+      const done = oldRoot.querySelector('[data-thanks]');
+      const nativeForms = cfg.form ? select(cfg.form) : unique(Array.from(d.querySelectorAll('.t-rec form[data-formactiontype="2"]')).filter(el => el.querySelector('input[type="tel"],input[data-tilda-rule="phone"]')));
+      const final = end ? [end] : [];
+      if (nativeForms.length === 1 && !end?.contains(nativeForms[0])) final.push(nativeForms[0].closest('.t-rec') || nativeForms[0]);
+      return { steps: oldSteps.map(el => [el]), final, done: done ? [done] : [], forms: nativeForms, legacy: oldRoot };
+    }
+    const steps = cfg.steps.map(step => {
+      const explicit = select(step.selector);
+      return explicit.length ? explicit : recordWithTitle(step.title);
+    });
+    let final = select(cfg.contact);
+    if (!final.length) final = recordWithTitle('Оставьте свои контакты');
+    let done = select(cfg.thanks);
+    if (!done.length) done = recordWithTitle('Благодарим за обращение');
+    let forms = cfg.form ? select(cfg.form) : unique(final.flatMap(el => Array.from(el.querySelectorAll('form[data-formactiontype="2"]'))));
+    forms = forms.filter(el => el.tagName === 'FORM');
+    if (!forms.length && !cfg.form) {
+      const pageForms = select('.t-rec form[data-formactiontype="2"]').filter(el => !el.closest('[data-tooltip-menu-id],.t-popup'));
+      const contactForms = pageForms.filter(el => el.querySelector('input[type="tel"],input[data-tilda-rule="phone"]'));
+      if (contactForms.length === 1) forms = contactForms;
+      else if (pageForms.length === 1) forms = pageForms;
+    }
+    if (forms.length === 1) {
+      const formRecord = forms[0].closest('.t-rec');
+      if (formRecord && !final.includes(formRecord)) final = final.concat(formRecord);
+    }
+    return { steps, final, done, forms, legacy: null };
+  }
+  function validateParts(parts) {
+    if (parts.steps.some(step => !step.length)) throw Error('Не найдены все три вопроса. Назначьте классы uc-quiz-q1, uc-quiz-q2, uc-quiz-q3 или укажите их ID в конфигурации.');
+    if (!parts.final.length) throw Error('Не найден финальный блок. Назначьте uc-quiz-contact блоку контактов и штатной форме.');
+    const records = parts.steps.flat().concat(parts.final, parts.done);
+    if (unique(records).length !== records.length) throw Error('Один блок попал в несколько шагов. Каждый вопрос и финальный шаг должны быть отдельными блоками Тильды. Для прежнего цельного HTML-виджета этот скрипт не подходит.');
+  }
+  function hide(nodes, hidden) {
+    nodes.forEach(el => {
+      el.classList.toggle('abq-hidden', hidden);
+      el.hidden = hidden;
+      if (hidden) el.setAttribute('aria-hidden', 'true'); else el.removeAttribute('aria-hidden');
+    });
+  }
+  function listen(el, event, handler, capture) {
+    el.addEventListener(event, handler, !!capture);
+    cleanups.push(() => el.removeEventListener(event, handler, !!capture));
+  }
+  function scrollToGroup(group) {
+    const target = group[0];
+    if (!target) return;
+    const top = target.getBoundingClientRect().top + w.scrollY - cfg.scrollOffset;
+    w.scrollTo({ top: Math.max(0, top), behavior: w.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  }
+  function writeFields() {
+    if (!form) return;
+    const values = {};
+    values[cfg.fieldName] = cfg.steps.map((step, i) => (i + 1) + '. ' + step.title + '\n' + answers[i]).join('\n\n');
+    values[cfg.fieldName + 'Source'] = 'Проектирование дома — Avdeeva Architects';
+    values[cfg.fieldName + 'ContactChannel'] = 'WhatsApp';
+    Object.keys(values).forEach(name => {
+      const existing = Array.from(form.elements).filter(el => el.name === name);
+      if (existing.some(el => el.getAttribute('data-blocks-quiz') !== '1')) throw Error('Имя скрытого поля уже занято: ' + name);
+      let input = existing[0];
+      if (!input) {
+        input = d.createElement('input');
+        input.type = 'hidden'; input.name = name; input.className = 't-input';
+        input.setAttribute('data-blocks-quiz', '1'); form.appendChild(input);
+      }
+      input.value = values[name];
+    });
+  }
+  function message(step, value) {
+    const node = groups[step][groups[step].length - 1].querySelector('[data-abq-error]');
+    if (node) { node.textContent = value; node.hidden = !value; }
+  }
+  function choose(step, value) {
+    answers[step] = value;
+    choices[step].forEach(choice => {
+      const selected = norm(choice.value) === norm(value);
+      choice.node.classList.toggle('abq-selected', selected);
+      if (choice.custom) choice.node.setAttribute('aria-checked', String(selected));
+      if (choice.input) choice.input.checked = selected;
+    });
+    message(step, '');
+    writeFields();
+  }
+  function show(step, scroll) {
+    index = step;
+    groups.forEach((group, i) => hide(group, i !== step));
+    hide(contact, step !== 3);
+    hide(thanks, true);
+    if (legacy) {
+      hide([legacy.querySelector('[data-quiz-layout]')].filter(Boolean), step === 3);
+      hide([legacy.querySelector('.aq-heading')].filter(Boolean), step === 3);
+    }
+    d.querySelectorAll('[data-abq-progress]').forEach(el => { el.textContent = step === 3 ? '95%' : [0, 33, 67][step] + '%'; });
+    d.querySelectorAll('[data-abq-progressbar]').forEach(el => {
+      const percent = step === 3 ? 95 : [0, 33, 67][step];
+      el.style.setProperty('--abq-progress', percent + '%');
+      el.setAttribute('aria-valuenow', String(percent));
+    });
+    if (step === 3) writeFields();
+    if (scroll) scrollToGroup(step === 3 && legacy && form && !legacy.contains(form) ? [form.closest('.t-rec') || form] : step === 3 ? contact : groups[step]);
+    w.dispatchEvent(new Event('resize'));
+  }
+  function next(event) {
+    if (event) { event.preventDefault(); event.stopImmediatePropagation(); }
+    if (index >= 3 || completed) return;
+    if (!answers[index]) {
+      message(index, 'Выберите вариант ответа, чтобы продолжить.');
+      const choice = choices[index][0];
+      if (choice) (choice.input || choice.node).focus();
+      return;
+    }
+    show(index + 1, true);
+  }
+  function previous(event) {
+    if (event) { event.preventDefault(); event.stopImmediatePropagation(); }
+    if (index > 0 && !completed) show(index - 1, true);
+  }
+  function success() {
+    if (index !== 3 || completed || answers.some(answer => !answer)) return;
+    completed = true; sending = false;
+    groups.forEach(group => hide(group, true)); hide(contact, true); hide(thanks, false);
+    if (legacy) hide([legacy.querySelector('[data-quiz-layout]'), legacy.querySelector('.aq-heading')].filter(Boolean), true);
+    scrollToGroup(thanks);
+    w.dispatchEvent(new Event('resize'));
+  }
+  function actionNodes(group, kind) {
+    const candidates = group.flatMap(el => Array.from(el.querySelectorAll('button,a,.t-btn,.tn-atom,[role="button"]')));
+    const found = unique(candidates.filter(el => {
+      const label = norm(el.getAttribute('aria-label') || text(el)).replace(/[→←›‹➜]/g, '').trim();
+      if (kind === 'next') return /^(далее|последний шаг|следующий вопрос)$/.test(label) || el.getAttribute('href') === '#quiz-next';
+      return /^(назад|предыдущий вопрос|вернуться к вопросам)$/.test(label) || ['←', '‹'].includes(text(el).trim()) || el.getAttribute('href') === '#quiz-prev';
+    }));
+    return found.filter(el => !found.some(parent => parent !== el && parent.contains(el)));
+  }
+  function buildChoices(group, step) {
+    const found = [];
+    const inputs = group.flatMap(el => Array.from(el.querySelectorAll('input[type="radio"]')));
+    inputs.forEach(input => {
+      const label = input.closest('label') || (input.id ? d.querySelector('label[for="' + CSS.escape(input.id) + '"]') : null);
+      const labelText = label ? text(label).trim() : '';
+      const readable = cfg.steps[step].options.find(value => norm(value) === norm(labelText));
+      const value = readable || (input.value && input.value !== 'on' ? input.value : labelText);
+      if (!value) return;
+      found.push({ node: label || input, input, value, custom: false });
+    });
+    if (!found.length) {
+      cfg.steps[step].options.forEach((value, option) => {
+        const nodes = unique(group.flatMap(el => Array.from(el.querySelectorAll('a,button,.tn-atom,.t-btn,[data-quiz-answer]')))).filter(el => norm(el.getAttribute('data-quiz-answer') || text(el)) === norm(value) || el.getAttribute('href') === '#quiz-answer-' + (option + 1));
+        // Bind the outer clickable object once, keeping nested text and pictures intact.
+        nodes.filter(el => !nodes.some(parent => parent !== el && parent.contains(el))).forEach(node => found.push({ node, value, custom: true }));
+      });
+    }
+    if (!found.length) throw Error('В вопросе ' + (step + 1) + ' не найдены варианты. Используйте radio-поля, текстовые кнопки или data-quiz-answer на карточках.');
+    return found;
+  }
+  function navigation(group, step) {
+    const target = group[group.length - 1];
+    const panel = d.createElement('div'); panel.className = 'abq-nav'; panel.setAttribute('data-abq-owned', '1');
+    const progress = d.createElement('div'); progress.className = 'abq-progress';
+    progress.innerHTML = '<span>Готово: <strong data-abq-progress>0%</strong></span><div data-abq-progressbar role="progressbar" aria-label="Прогресс квиза" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>';
+    panel.appendChild(progress);
+    const prevs = actionNodes(group, 'prev');
+    const nexts = actionNodes(group, 'next');
+    if (step > 0 && !prevs.length) {
+      const button = d.createElement('button'); button.type = 'button'; button.className = 'abq-back'; button.textContent = '← Назад'; panel.appendChild(button); prevs.push(button);
+    }
+    if (!nexts.length) {
+      const button = d.createElement('button'); button.type = 'button'; button.className = 'abq-next'; button.textContent = step === 2 ? 'Последний шаг →' : 'Далее →'; panel.appendChild(button); nexts.push(button);
+    }
+    prevs.forEach(button => {
+      if (step === 0) { button.setAttribute('aria-disabled', 'true'); if (button.tagName === 'BUTTON') button.disabled = true; }
+      listen(button, 'click', previous, true);
+    });
+    nexts.forEach(button => listen(button, 'click', next, true));
+    const error = d.createElement('p'); error.setAttribute('data-abq-error', ''); error.setAttribute('role', 'alert'); error.hidden = true; panel.appendChild(error);
+    target.appendChild(panel);
+  }
+  function installStyles() {
+    if (d.getElementById('avdeeva-blocks-quiz-style')) return;
+    const style = d.createElement('style'); style.id = 'avdeeva-blocks-quiz-style';
+    style.textContent = '.abq-hidden{display:none!important}.abq-choice{cursor:pointer!important}.abq-choice.abq-selected{outline:2px solid #686a66!important;outline-offset:3px}.abq-choice:focus-visible{outline:2px solid #393b38!important;outline-offset:4px}.abq-nav{box-sizing:border-box;max-width:1200px;margin:0 auto;padding:24px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;font:14px Arial,sans-serif;color:#303436;background:#fbf8f4}.abq-progress{flex:1;min-width:120px;font-size:12px}.abq-progress strong{margin-left:6px}.abq-progress [role=progressbar]{margin-top:8px;height:5px;border-radius:4px;background:#e6d0ba;overflow:hidden}.abq-progress [role=progressbar]:after{content:"";display:block;width:var(--abq-progress,0%);height:100%;background:#686a66}.abq-nav button,.abq-contact-back{font:inherit;padding:12px 20px;border:1px solid #686a66;border-radius:24px;cursor:pointer;background:#686a66;color:#fff}.abq-nav .abq-back,.abq-contact-back{background:#fbf8f4;color:#303436}.abq-nav [role=alert]{width:100%;margin:0;color:#8c3027}.abq-nav [hidden]{display:none!important}.abq-contact-back{display:block;margin:18px auto}.abq-generated-thanks{box-sizing:border-box;padding:100px 24px;text-align:center;background:#fbf8f4;color:#303436;font:18px/1.5 Arial,sans-serif}.abq-generated-thanks h2{font-size:30px;margin:0 0 14px}.abq-generated-thanks p{max-width:680px;margin:auto}@media(max-width:540px){.abq-nav{gap:10px;padding:20px 16px}.abq-nav button{padding:11px 14px;font-size:13px}}';
+    d.head.appendChild(style);
+  }
+  function init() {
+    if (initialized) return true;
+    const parts = resolve();
+    validateParts(parts);
+    const prepared = parts.steps.map(buildChoices);
+    if (parts.forms.length !== 1) throw Error('Не найдена одна штатная форма Тильды. Назначьте uc-quiz-contact блоку формы или укажите form:"#rec123456 form". Приёмщики создаются только в Тильде.');
+    form = parts.forms[0];
+    // Verify field ownership before hiding or modifying any record.
+    writeFields();
+    groups = parts.steps; contact = parts.final; thanks = parts.done; choices = prepared; legacy = parts.legacy;
+    if (legacy) {
+      legacy.dataset.quizInitialized = 'true';
+      legacy.querySelectorAll('.aq-navigation,.aq-form-unavailable').forEach(el => { el.hidden = true; });
+    }
+    if (!thanks.length) {
+      const node = d.createElement('section'); node.className = 'abq-generated-thanks'; node.setAttribute('data-abq-owned', '1');
+      node.innerHTML = '<h2>Благодарим за обращение!</h2><p>Мы свяжемся с вами, чтобы уточнить детали и подготовить для вас персональное предложение.</p>';
+      contact[contact.length - 1].after(node); thanks = [node];
+    }
+    installStyles();
+    choices.forEach((items, step) => items.forEach(choice => {
+      choice.node.classList.add('abq-choice');
+      if (choice.custom) {
+        choice.node.setAttribute('role', 'radio'); choice.node.setAttribute('aria-checked', 'false'); choice.node.setAttribute('tabindex', '0'); choice.node.setAttribute('aria-label', choice.value);
+        listen(choice.node, 'click', event => { event.preventDefault(); event.stopImmediatePropagation(); choose(step, choice.value); }, true);
+        listen(choice.node, 'keydown', event => {
+          if (event.key === ' ' || event.key === 'Enter') { event.preventDefault(); event.stopImmediatePropagation(); choose(step, choice.value); }
+          if (['ArrowRight','ArrowDown','ArrowLeft','ArrowUp'].includes(event.key)) {
+            event.preventDefault(); const offset = ['ArrowLeft','ArrowUp'].includes(event.key) ? -1 : 1;
+            const sibling = items[(items.indexOf(choice) + offset + items.length) % items.length]; choose(step, sibling.value); sibling.node.focus();
+          }
+        });
+      } else {
+        listen(choice.input, 'change', () => { if (choice.input.checked) choose(step, choice.value); });
+        if (choice.input.checked) answers[step] = choice.value;
+      }
+    }));
+    groups.forEach(navigation);
+    // Question records may themselves be native Tilda radio forms. Never send them as leads.
+    groups.forEach(group => group.forEach(record => {
+      record.querySelectorAll('form').forEach(questionForm => listen(questionForm, 'submit', next, true));
+      listen(record, 'keydown', event => {
+        if (event.key === 'Enter' && event.target.matches('input') && !event.isComposing) next(event);
+      }, true);
+    }));
+    const prevs = actionNodes(contact, 'prev');
+    if (!prevs.length) {
+      const button = d.createElement('button'); button.type = 'button'; button.className = 'abq-contact-back'; button.textContent = '← Вернуться к вопросам'; button.setAttribute('data-abq-owned', '1'); contact[0].appendChild(button); prevs.push(button);
+    }
+    prevs.forEach(button => listen(button, 'click', previous, true));
+    let jqBound = false;
+    function bindJq() {
+      if (jqBound || !w.jQuery) return;
+      jqBound = true;
+      w.jQuery(form).on('tildaform:aftersuccess.abq', success).on('tildaform:aftererror.abq', () => { sending = false; });
+      cleanups.push(() => w.jQuery(form).off('.abq'));
+    }
+    bindJq();
+    listen(form, 'click', event => {
+      if (event.target.closest('button[type="submit"],button:not([type]),input[type="submit"],.t-submit')) bindJq();
+    }, true);
+    listen(form, 'submit', event => {
+      bindJq();
+      if (index !== 3 || answers.some(answer => !answer)) { event.preventDefault(); event.stopImmediatePropagation(); return; }
+      writeFields(); sending = true;
+    }, true);
+    listen(form, 'tildaform:aftersuccess', success);
+    listen(form, 'tildaform:aftererror', () => { sending = false; });
+    initialized = true;
+    show(0, false);
+    return true;
+  }
+  function inspect() {
+    const parts = initialized ? { steps: groups, final: contact, forms: form ? [form] : [] } : resolve();
+    return { initialized, questionBlocks: parts.steps.map(nodes => nodes.map(el => el.id)), contactBlocks: parts.final.map(el => el.id), forms: parts.forms.map(el => el.id), answerValues: answers.slice(), currentStep: index };
+  }
+  w.AvdeevaBlocksQuiz = { init, inspect, next: () => next(), previous: () => previous() };
+  function start() {
+    let lastError;
+    const attempt = () => { try { return init(); } catch (error) { lastError = error; return false; } };
+    if (attempt()) return;
+    const observer = new MutationObserver(() => { if (attempt()) observer.disconnect(); });
+    observer.observe(d.body, { childList: true, subtree: true });
+    setTimeout(() => { observer.disconnect(); if (!initialized) console.error('[Avdeeva quiz]', lastError.message, inspect()); }, 10000);
+  }
+  if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', () => setTimeout(start, 0), { once: true });
+  else setTimeout(start, 0);
+})(window, document);
+
+</script>
