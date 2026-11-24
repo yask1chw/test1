@@ -1,3 +1,15 @@
+# Плавающая кнопка связи VALMO — HTML для Тильды
+
+[Открыть HTML-код](https://github.com/yask1chw/test1/blob/main/valmo-floating-contact.html) · [Скачать ZIP с инструкцией](https://github.com/yask1chw/test1/raw/refs/heads/main/valmo-floating-contact.zip)
+
+Вставьте весь valmo-floating-contact.html в один HTML-элемент существующего Zero Block или в T123 без отступов. Код создаёт красную кнопку 56×56 с раскрывающимися пунктами Telegram и «Перезвонить мне». Шрифт и иконки встроены; внешних библиотек нет. Положение — относительно окна браузера, включая Zero Block с масштабированием/обрезкой.
+
+Telegram взят из исходного проекта: https://t.me/ValmoRus_Spectehnika. В CONFIG замените **callbackPopup: '#popup:valmo-callback'** на ссылку своего попапа. Саму форму создайте штатными блоками Тильды. Если используете отдельный Zero Block только под виджет, уберите лишнюю высоту его артборда: плавающий элемент не занимает место в потоке страницы.
+
+Проверены 1200/640/320 px, раскрытие и закрытие, клавиатура, фиксация при прокрутке, ссылки, отсутствие дубликатов и выбранные правила доступности. Реальный попап Тильды и переход в Telegram не выполнялись. Подробности в ZIP.
+
+---
+
 # Филиалы VALMO RUS — готовый код для Zero Block
 
 [HTML-код для вставки](https://github.com/yask1chw/test1/blob/main/valmo-branches-zero.html) · [Скачать ZIP с инструкцией и исходниками](https://github.com/yask1chw/test1/raw/refs/heads/main/valmo-branches-zero.zip)
