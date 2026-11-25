@@ -1,3 +1,13 @@
+# VALMO — товарный попап Тильды
+
+[Готовый HTML](https://github.com/yask1chw/test1/blob/main/valmo-product-popup.html) · [ZIP с CSS, JS и инструкцией](https://github.com/yask1chw/test1/raw/refs/heads/main/valmo-product-popup.zip)
+
+Добавьте HTML целиком в отдельный T123 после существующего оформления каталога. В CONFIG укажите ссылку своего попапа в contactPopup. Основная кнопка «Получить цену» сохраняет штатное #order. Оформлены первый экран, галерея, наличие, характеристики, вкладки и похожие товары по исходному проекту. Данные читаются из текущего товара Тильды.
+
+Локальная проверка присланного HTML пройдена на 1440/1200/640/320 px, включая вкладки, обновление товара и сохранение исходной ссылки #order. Живая корзина, AJAX и библиотека галереи Тильды не проверены из-за сетевой блокировки. Инструкция и точные ограничения — в ZIP.
+
+---
+
 # Каталог VALMO — отформатированная версия кода
 
 [Открыть читаемый HTML](https://github.com/yask1chw/test1/blob/main/valmo-tilda-catalog-formatted.html) · [ZIP с отдельными CSS/JS](https://github.com/yask1chw/test1/raw/refs/heads/main/valmo-tilda-catalog-formatted.zip)
