@@ -1,3 +1,13 @@
+# Каталог VALMO — отформатированная версия кода
+
+[Открыть читаемый HTML](https://github.com/yask1chw/test1/blob/main/valmo-tilda-catalog-formatted.html) · [ZIP с отдельными CSS/JS](https://github.com/yask1chw/test1/raw/refs/heads/main/valmo-tilda-catalog-formatted.zip)
+
+Обновлена только читаемость кода. CONFIG теперь в начале HTML, CSS разбит на секции, JavaScript оформлен с отступами и комментариями, данные шрифтов перенесены в конец. Логика и внешний вид сохранены: проверены эквивалентность JavaScript, все CSS-правила браузера и байты встроенных шрифтов. Отдельные CSS и JS приложены в ZIP. Старые имена HTML/ZIP также обновлены этой версией.
+
+Вставляйте целиком один HTML-файл в T123 перед каталогом, как раньше. Одновременно вставлять отдельные CSS/JS и полный HTML не нужно. Настройка своего попапа quotePopup находится в CONFIG в начале файла.
+
+---
+
 # VALMO — оформление каталога Тильды, поиск и выпадающий тип техники
 
 [Готовый HTML-код](https://github.com/yask1chw/test1/blob/main/valmo-tilda-catalog-style.html) · [ZIP с инструкцией](https://github.com/yask1chw/test1/raw/refs/heads/main/valmo-tilda-catalog-style.zip)
